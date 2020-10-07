@@ -2,7 +2,7 @@ const width=720;
 const height=720;
 let x = [];
 let e = [];
-var gravity = 2;
+var gravity = 1;
 var player={
     x:width/2,
     y:height/2,
@@ -10,7 +10,7 @@ var player={
     xspeed:0,
     xaccel:1,
     yspeed:0,
-    yaccel:-7,
+    yaccel:-5,
     isjump:1,
 };
 
