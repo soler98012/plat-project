@@ -13,6 +13,7 @@ var player={
     yspeed:0,
     yaccel:-2.5,
     isjump:1,
+    canwall:0,
 };
 
 class enemy{
@@ -59,23 +60,31 @@ function playermove(){
     }
     
     //Walljump
-    if(player.x+player.xspeed < 1 && player.y < 650 && keyIsDown(90) && keyIsDown(LEFT_ARROW)){
-        
-        player.xspeed = 25;
-        player.yspeed = -15;
-    }
-    if(player.x+player.xspeed >= width-player.size - 1 && player.y < 650 && keyIsDown(90) && keyIsDown(RIGHT_ARROW)){
-        player.xspeed = -25;
-        player.yspeed = -15;
-    }
 
-
+    if(player.canwall == 1){
+        if(player.x < 1 && keyIsDown(90)){
+            
+            player.xspeed = 25;
+            player.yspeed = -15;
+        }
+        if(player.x >= width-player.size - 1 && keyIsDown(90)){
+            player.xspeed = -25;
+            player.yspeed = -15;
+        }
+    }   
+    //not too good method to avoid auto walljump
+    if(!keyIsDown(90) && (player.x < 1 || player.x >= width-player.size - 1) && player.isjump != 0){
+        player.canwall = 1;
+    } else{
+        player.canwall = 0;
+    }
+    
     player.x += player.xspeed;
     
 
 
 
-    //Salto
+    //jump
     if(player.isjump <= 5){
         player.yspeed += keyIsDown(90) * player.yaccel;
         player.isjump += 1;
@@ -83,7 +92,9 @@ function playermove(){
     player.yspeed += gravity;
 
     if(player.y+player.yspeed > height-player.size){
-        player.isjump=0;
+        if(!keyIsDown(90)){
+            player.isjump=0;
+        }  
         while(player.y+player.yspeed > height-player.size){
             player.yspeed -= 0.1;
         }
@@ -95,7 +106,7 @@ function playermove(){
     player.y = round(player.yspeed + player.y);
 
     //dibujar
-    text(player.y, 10, 30);
+    text(player.canwall, 10, 30);
     square(player.x,player.y,player.size);
 }
 
