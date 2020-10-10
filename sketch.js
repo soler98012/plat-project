@@ -3,7 +3,7 @@ const height=720;
 let x = [];
 let e = [];
 var gravity = 0.5;
-
+let playersprite;
 var player={
     x:width/2,
     y:height/2,
@@ -41,6 +41,8 @@ setup = function(){
     var myCanvas = createCanvas(width,height);
     myCanvas.parent("container");
     noStroke();
+    playersprite = createSprite(player.x,  player.y,  player.size,  player.size);
+    playersprite.shapeColor = color(255);
 }
 function playermove(){
     fill(255,255,255);
@@ -59,27 +61,9 @@ function playermove(){
         player.xspeed -= player.xaccel/2;
     }
     
-    //Walljump
-
-    if(player.canwall == 1){
-        if(player.x < 1 && keyIsDown(90)){
-            
-            player.xspeed = 25;
-            player.yspeed = -15;
-        }
-        if(player.x >= width-player.size - 1 && keyIsDown(90)){
-            player.xspeed = -25;
-            player.yspeed = -15;
-        }
-    }   
-    //not too good method to avoid auto walljump
-    if(!keyIsDown(90) && (player.x < 1 || player.x >= width-player.size - 1) && player.isjump != 0){
-        player.canwall = 1;
-    } else{
-        player.canwall = 0;
-    }
     
-    player.x += player.xspeed;
+    
+
     
 
 
@@ -103,16 +87,40 @@ function playermove(){
     while(player.y + player.yspeed < 0){
         player.yspeed += 1;
     } 
+
+    //Walljump
+
+    if(player.canwall == 1){
+        if(player.x < 1 && keyIsDown(90)){
+            
+            player.xspeed = 25;
+            player.yspeed = -15;
+        }
+        if(player.x >= width-player.size - 1 && keyIsDown(90)){
+            player.xspeed = -25;
+            player.yspeed = -15;
+        }
+    }   
+    //not too good method to avoid auto walljump
+    if(!keyIsDown(90) && (player.x < 1 || player.x >= width-player.size - 1) && player.isjump != 0){
+        player.canwall = 1;
+    } else{
+        player.canwall = 0;
+    }
+
+
+    player.x += player.xspeed;
     player.y = round(player.yspeed + player.y);
 
-    //dibujar
-    text(player.canwall, 10, 30);
-    square(player.x,player.y,player.size);
+    //i know it's a bad bodge but i wanna have this ready and working
+    playersprite.position.x = player.x + player.size/2;
+    playersprite.position.y = player.y + player.size/2;
 }
 
 
 function draw() {
-    let ms = millis();
     background(75,75,255);
+    drawSprites();
+    let ms = millis();
     playermove();
 }
