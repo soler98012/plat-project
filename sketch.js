@@ -1,4 +1,4 @@
-const width=1080;
+const width=720;
 const height=720;
 let x = [];
 let e = [];
@@ -16,25 +16,7 @@ var player={
     canwall:0,
 };
 
-class enemy{
-    constructor(x,y,size, angle , speed){
-        this.x = x;
-        this.y = y; 
-        this.size = size;
-        this.angle = angle;
-        this.speed = speed;
-    }
-}
-function moveEnemy(enemy){
-    fill(255,0,0);
-    //no se mates Q_Q
-
-    var rads = (angle-90) * Math.PI / 180;
-    obj.x += Math.cos(rads);
-    obj.y += Math.sin(rads);
-    circle(obj.x,obj.y,obj.size);
-}
-
+var enemies;
 
 
 setup = function(){
@@ -43,12 +25,21 @@ setup = function(){
     noStroke();
     playersprite = createSprite(player.x,  player.y,  player.size,  player.size);
     playersprite.shapeColor = color(255);
+    enemies = new Group();
 }
+function createEnemy(x,y,size,spd,dir){
+    var e = createSprite(x,y,size,size);
+    e.shapeColor = color(255,0,0);
+    e.setSpeed(spd,dir);
+    enemies.add(e);
+}
+
+
 function playermove(){
     fill(255,255,255);
     
     //movimiento horizontal
-    player.xspeed += ((keyIsDown(LEFT_ARROW) && player.x >= 0) * -player.xaccel) 
+    player.xspeed += ((keyIsDown(LEFT_ARROW) && player.x >= 0) * -player.xaccel)
     + ((keyIsDown(RIGHT_ARROW) && player.x <= width - player.size) * +player.xaccel);
     
     player.xspeed -= Math.sign(player.xspeed) * player.xaccel/2;
@@ -60,13 +51,6 @@ function playermove(){
     while(player.x+player.xspeed >= width-player.size){
         player.xspeed -= player.xaccel/2;
     }
-    
-    
-    
-
-    
-
-
 
     //jump
     if(player.isjump <= 5){
@@ -117,10 +101,26 @@ function playermove(){
     playersprite.position.y = player.y + player.size/2;
 }
 
+function cleanEnemies(){
+    for(var i = 0; i<enemies.length; i++){
+      if(enemies[i].position.x < 0 || enemies[i].position.x > width || enemies[i].position.y < 0 || enemies[i].position.y > height)
+      enemies[i].remove();
+  }
+}
+
+function enemyCircle(x,y,size,spd,sep){
+    for(i = 0; i<360; i+=sep){
+        createEnemy(x,y,size,spd,i);
+    }
+}
 
 function draw() {
     background(75,75,255);
     drawSprites();
-    let ms = millis();
+    ms = millis();
     playermove();
+    if(frameCount%60 == 0){
+        enemyCircle(width/2,height/2,5,3,20)
+    }
+    cleanEnemies();
 }
